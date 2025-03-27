@@ -3,19 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaView, Text, StyleSheet, Button } from 'react-native';
 import HabitsScreen from './screens/HabitsScreen';
+import quotes from './quotes';
 
 // Stack navigator setup
 const Stack = createNativeStackNavigator();
-
-const quotes = [
-  "Believe you can and you're halfway there.",
-  "Every day is a second chance.",
-  "Small steps every day lead to big changes.",
-  "Keep going, you're doing great!",
-  "Consistency is key. You've got this!",
-  "Every morning is a fresh start.",
-  "Focus on progress, not perfection."
-];
 
 // Function to select a daily-changing quote
 function getDailyQuote() {
