@@ -10,60 +10,109 @@ export default function HabitsScreen() {
   const [habits, setHabits] = useState([]);
   const [habitText, setHabitText] = useState('');
   const [editingHabitId, setEditingHabitId] = useState(null);
-
-  // Load habits from AsyncStorage on component mount
-  useEffect(() => {
-    loadHabits();
-  }, []);
-
-  // Save habits to AsyncStorage whenever they change
-  useEffect(() => {
-    AsyncStorage.setItem('habits', JSON.stringify(habits));
-  }, [habits]);
+  const [weekStartDate, setWeekStartDate] = useState(null);
+  
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
   // Function to load habits from AsyncStorage
   const loadHabits = async () => {
-    const storedHabits = await AsyncStorage.getItem('habits');
-    if (storedHabits) setHabits(JSON.parse(storedHabits));
-  };
-
-  // Add a new habit or update existing habit
-  const addOrUpdateHabit = () => {
-    if (habitText.trim().length === 0) return;
-
-    if (editingHabitId) {
-      // Update existing habit
-      setHabits(habits.map(habit => 
-        habit.id === editingHabitId ? { ...habit, text: habitText } : habit
-      ));
-      setEditingHabitId(null);
-    } else {
-      // Add new habit
-      setHabits([...habits, { id: Date.now().toString(), text: habitText, completed: false }]);
+    try {
+      const storedHabits = await AsyncStorage.getItem('habits');
+      const storedStartDate = await AsyncStorage.getItem('weekStartDate');
+  
+      if (storedHabits) setHabits(JSON.parse(storedHabits));
+      if (storedStartDate) setWeekStartDate(storedStartDate);
+    } catch (error) {
+      console.error('Error loading data:', error);
     }
-    setHabitText('');
-  };
+  }; 
 
-  // Toggle habit completion status
-  const toggleHabit = (id) => {
-    setHabits(habits.map(habit => 
-      habit.id === id ? { ...habit, completed: !habit.completed } : habit
-    ));
-  };
+    // Load habits and week start date when the screen first mounts
+    useEffect(() => {
+        loadHabits();
+    }, []);
 
-  // Edit habit text
-  const editHabit = (habit) => {
-    setHabitText(habit.text);
-    setEditingHabitId(habit.id);
-  };
+    // Save habits whenever they change
+    useEffect(() => {
+        AsyncStorage.setItem('habits', JSON.stringify(habits));
+    }, [habits]);
 
-  // Delete habit with confirmation
-  const deleteHabit = (id) => {
-    Alert.alert("Delete Habit", "Are you sure you want to delete this habit?", [
-      { text: "Cancel" },
-      { text: "Delete", onPress: () => setHabits(habits.filter(habit => habit.id !== id)), style: 'destructive' }
-    ]);
-  };
+    // Save the start of the week whenever it changes
+    useEffect(() => {
+        if (weekStartDate) {
+        AsyncStorage.setItem('weekStartDate', weekStartDate);
+        }
+    }, [weekStartDate]);
+    
+    // If no week start date is set (first-time run), set it to today
+    useEffect(() => {
+        if (!weekStartDate) {
+        const today = getTodayDate(); // e.g. '2024-04-01'
+        setWeekStartDate(today);
+        }
+    }, [weekStartDate]);
+
+    // Add a new habit or update existing habit
+    const addOrUpdateHabit = () => {
+        if (habitText.trim().length === 0) return;
+
+        if (editingHabitId) {
+        setHabits(habits.map(habit =>
+            habit.id === editingHabitId
+            ? { ...habit, text: habitText }
+            : habit
+        ));
+        setEditingHabitId(null);
+        } else {
+        const newHabit = {
+            id: Date.now().toString(),
+            text: habitText,
+            history: {} // new: empty history when added
+        };
+        setHabits([...habits, newHabit]);
+        }
+
+        setHabitText('');
+    };
+
+    // Toggle habit completion status
+    const today = getTodayDate()
+    const toggleHabit = (id) => {
+        const getTodayDate = () => {
+            const today = new Date();
+            return today.toISOString().split('T')[0]; // format: YYYY-MM-DD
+        };
+    
+        setHabits(habits.map(habit => {
+        if (habit.id !== id) return habit;
+    
+        const currentStatus = habit.history?.[today] || false;
+        return {
+            ...habit,
+            history: {
+            ...habit.history,
+            [today]: !currentStatus // toggle today’s status
+            }
+        };
+        }));
+    };  
+
+    // Edit habit text
+    const editHabit = (habit) => {
+        setHabitText(habit.text);
+        setEditingHabitId(habit.id);
+    };
+
+    // Delete habit with confirmation
+    const deleteHabit = (id) => {
+        Alert.alert("Delete Habit", "Are you sure you want to delete this habit?", [
+        { text: "Cancel" },
+        { text: "Delete", onPress: () => setHabits(habits.filter(habit => habit.id !== id)), style: 'destructive' }
+        ]);
+    };
 
   // Render habits list with edit and delete buttons
   return (
@@ -88,17 +137,19 @@ export default function HabitsScreen() {
             onLongPress={() => editHabit(item)}
           >
             <View style={styles.habitRow}>
-                <Ionicons
-                    name={item.completed ? "checkmark-circle-sharp" : "ellipse-outline"}
-                    size={24}
-                    color={item.completed ? "green" : "black"}
-                />
-                <Text style={[styles.habit, item.completed && styles.completed]}>
-                    {item.text}
-                </Text>
-                <TouchableOpacity onPress={() => deleteHabit(item.id)}>
-                    <Ionicons name="trash-sharp" size={24} color="red" />
-                </TouchableOpacity>
+            <Ionicons
+                name={item.history?.[getTodayDate()] ? "checkmark-circle-sharp" : "ellipse-outline"}
+                size={24}
+                color={item.history?.[getTodayDate()] ? "green" : "black"}
+            />
+
+            <Text style={[styles.habit, item.history?.[getTodayDate()] && styles.completed]}>
+                {item.text}
+            </Text>
+
+            <TouchableOpacity onPress={() => deleteHabit(item.id)}>
+                <Ionicons name="trash-sharp" size={24} color="red" />
+             </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
