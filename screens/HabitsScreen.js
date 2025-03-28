@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-
+import { getTodayDate, getWeekDates, isCurrentWeek } from '../utils/utils';
+import WeeklyProgress from '../components/WeeklyProgress';
 
 export default function HabitsScreen() {
   // State for storing habits and current habit input
@@ -11,26 +12,6 @@ export default function HabitsScreen() {
   const [habitText, setHabitText] = useState('');
   const [editingHabitId, setEditingHabitId] = useState(null);
   const [weekStartDate, setWeekStartDate] = useState(null);
-  
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
-
-  // Function to calculate week start from day 1 of entering the habit
-  const getWeekDates = (startDateStr) => {
-    const dates = [];
-    const start = new Date(startDateStr);
-  
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(start);
-      day.setDate(start.getDate() + i);
-      dates.push(day.toISOString().split('T')[0]); // YYYY-MM-DD
-    }
-  
-    return dates;
-  };
-
   
   // Function to load habits from AsyncStorage
   const loadHabits = async () => {
@@ -148,7 +129,11 @@ export default function HabitsScreen() {
               value={habitText}
               onChangeText={setHabitText}
             />
-            <TouchableOpacity onPress={addOrUpdateHabit} style={styles.addButton}>
+            <TouchableOpacity 
+                onPress={addOrUpdateHabit}
+                disabled={!isCurrentWeek(weekStartDate)}
+                style={styles.addButton}
+            >
               <Ionicons name="add-circle" size={32} color="#2e86de" />
             </TouchableOpacity>
           </View>
@@ -181,39 +166,7 @@ export default function HabitsScreen() {
   
       // 📊 Weekly progress section
       ListFooterComponent={
-        weekStartDate && (
-          <View style={{ marginTop: 30, paddingHorizontal: 16 }}>
-            <Text style={styles.title}>Weekly Progress</Text>
-  
-            {/* Header row */}
-            <View style={styles.progressRow}>
-              <Text style={[styles.progressCell, styles.habitNameCell]}>Habit</Text>
-              {getWeekDates(weekStartDate).map(date => (
-                <Text key={date} style={styles.progressCell}>
-                  {new Date(date).getMonth() + 1}/{new Date(date).getDate()}
-                </Text>
-              ))}
-            </View>
-  
-            {/* Habit rows */}
-            {habits.map(habit => (
-              <View key={habit.id} style={styles.progressRow}>
-                <Text style={[styles.progressCell, styles.habitNameCell]}>
-                  {habit.text}
-                </Text>
-                {getWeekDates(weekStartDate).map(date => (
-                  <Ionicons
-                    key={date}
-                    name={habit.history?.[date] ? "checkmark-circle-sharp" : "ellipse-outline"}
-                    size={24}
-                    color={habit.history?.[date] ? "green" : "black"}
-                    style={styles.progressCell}
-                  />
-                ))}
-              </View>
-            ))}
-          </View>
-        )
+        <WeeklyProgress habits={habits} weekStartDate={weekStartDate} />
       }
     />
   );  
