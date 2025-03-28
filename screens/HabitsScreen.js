@@ -129,12 +129,12 @@ export default function HabitsScreen() {
               value={habitText}
               onChangeText={setHabitText}
             />
-            <TouchableOpacity 
+            <TouchableOpacity
                 onPress={addOrUpdateHabit}
-                disabled={!isCurrentWeek(weekStartDate)}
+                testID="add-habit-button"
                 style={styles.addButton}
-            >
-              <Ionicons name="add-circle" size={32} color="#2e86de" />
+                >
+                <Ionicons name="add-circle" size={32} color="#2e86de" />
             </TouchableOpacity>
           </View>
         </View>
