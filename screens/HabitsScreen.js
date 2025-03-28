@@ -148,11 +148,13 @@ export default function HabitsScreen() {
         >
           <View style={styles.habitRowWrapper}>
             <View style={styles.habitRow}>
-              <Ionicons
-                name={item.history?.[getTodayDate()] ? "checkmark-circle-sharp" : "ellipse-outline"}
-                size={24}
-                color={item.history?.[getTodayDate()] ? "green" : "black"}
-              />
+            <View testID={`habit-icon-${item.id}`}>
+                <Ionicons
+                    name={item.history?.[getTodayDate()] ? 'checkmark-circle-sharp' : 'ellipse-outline'}
+                    size={24}
+                    color={item.history?.[getTodayDate()] ? 'green' : 'black'}
+                />
+            </View>
               <Text style={[styles.habit, item.history?.[getTodayDate()] && styles.completed]}>
                 {item.text}
               </Text>

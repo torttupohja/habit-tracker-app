@@ -3,8 +3,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getWeekDates } from '../utils/utils';
 
-const WeeklyProgress = ({ habits, weekStartDate }) => {
-  if (!weekStartDate || habits.length === 0) return null;
+const WeeklyProgress = ({ habits = [], weekStartDate }) => {
+  if (!Array.isArray(habits) || !weekStartDate || habits.length === 0) {
+    return null;
+  }
 
   const weekDates = getWeekDates(weekStartDate);
 
@@ -12,7 +14,7 @@ const WeeklyProgress = ({ habits, weekStartDate }) => {
     <View style={styles.wrapper}>
       <Text style={styles.title}>Weekly Progress</Text>
 
-      {/* Header row with dates */}
+      {/* Header row */}
       <View style={styles.progressRow}>
         <Text style={[styles.progressCell, styles.habitNameCell]}>Habit</Text>
         {weekDates.map(date => (
@@ -22,23 +24,25 @@ const WeeklyProgress = ({ habits, weekStartDate }) => {
         ))}
       </View>
 
-      {/* Habit rows with icons */}
-      {habits.map(habit => (
-        <View key={habit.id} style={styles.progressRow}>
-          <Text style={[styles.progressCell, styles.habitNameCell]}>
-            {habit.text}
-          </Text>
-          {weekDates.map(date => (
-            <Ionicons
-              key={date}
-              name={habit.history?.[date] ? 'checkmark-circle-sharp' : 'ellipse-outline'}
-              size={22}
-              color={habit.history?.[date] ? 'green' : 'black'}
-              style={styles.progressCell}
-            />
-          ))}
-        </View>
-      ))}
+      {/* Habit rows */}
+      {habits.map(habit => {
+        if (!habit || typeof habit !== 'object' || !habit.id || !habit.text) return null;
+
+        return (
+          <View key={habit.id} style={styles.progressRow}>
+            <Text style={[styles.progressCell, styles.habitNameCell]}>{habit.text}</Text>
+            {weekDates.map(date => (
+              <Ionicons
+                key={date}
+                name={habit.history?.[date] ? 'checkmark-circle-sharp' : 'ellipse-outline'}
+                size={22}
+                color={habit.history?.[date] ? 'green' : 'black'}
+                style={styles.progressCell}
+              />
+            ))}
+          </View>
+        );
+      })}
     </View>
   );
 };
