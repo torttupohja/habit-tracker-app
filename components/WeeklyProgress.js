@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getWeekDates } from '../utils/utils';
+import habitColors from '../constants/colors';
+import styles from '../styles/WeeklyProgressStyles';
 
 const WeeklyProgress = ({ habits = [], weekStartDate }) => {
   if (!Array.isArray(habits) || !weekStartDate || habits.length === 0) {
@@ -15,11 +17,17 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
 
       {/* Header row */}
       <View style={styles.progressRow}>
-        <Text style={[styles.progressCell, styles.habitNameCell]}>Habit</Text>
+      <Text style={[styles.progressCell, styles.habitNameCell]}>
+        Habit
+      </Text>
         {getWeekDates(weekStartDate).map(date => {
-          console.log("📆 WeeklyProgress rendering date cell:", date);
           return (
-            <Text key={date} style={styles.progressCell}>
+            <Text
+              key={date}
+              style={styles.progressCell}
+              numberOfLines={1}
+              ellipsizeMode="clip"
+            >
               {date.slice(5).replace('-', '/')}
             </Text>
           );
@@ -28,19 +36,27 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
 
 
       {/* Habit rows */}
-      {habits.map(habit => {
-        if (!habit || typeof habit !== 'object' || !habit.id || !habit.text) return null;
+      {habits.map((habit, index) => {
+        const colors = habitColors[index % habitColors.length];
 
         return (
-          <View key={habit.id} style={styles.progressRow}>
-            <Text style={[styles.progressCell, styles.habitNameCell]}>{habit.text}</Text>
-            {weekDates.map(date => (
+          <View
+            key={habit.id}
+            style={[
+              styles.progressRow,
+              { backgroundColor: colors.faded }, // faded row color
+            ]}
+          >
+            <Text style={[styles.progressCell, styles.habitNameText]}>
+              {habit.text}
+            </Text>
+            {weekDates.map((date) => (
               <Ionicons
                 key={date}
                 name={habit.history?.[date] ? 'checkmark-circle-sharp' : 'ellipse-outline'}
-                size={22}
-                color={habit.history?.[date] ? 'green' : 'black'}
-                style={styles.progressCell}
+                size={30}
+                color={habit.history?.[date] ? colors.bright : 'black'}
+                style={[styles.progressCell, styles.iconCell]}
               />
             ))}
           </View>
@@ -49,38 +65,5 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  wrapper: {
-    marginTop: 30,
-    paddingHorizontal: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  progressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    paddingBottom: 4,
-  },
-  progressCell: {
-    width: 40,
-    textAlign: 'center',
-    fontSize: 14,
-    lineHeight: 16,
-    overflow: 'hidden',
-  },
-  habitNameCell: {
-    flex: 1,
-    textAlign: 'left',
-    fontSize: 14,
-    paddingRight: 5,
-  },
-});
 
 export default WeeklyProgress;

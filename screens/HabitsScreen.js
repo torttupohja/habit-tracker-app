@@ -6,7 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { getTodayDate, getWeekDates } from '../utils/utils';
 import WeeklyProgress from '../components/WeeklyProgress';
 import BackgroundWrapper from '../components/BackgroundWrapper';
-import styles from './HabitsScreenStyles';
+import styles from '../styles/HabitsScreenStyles';
+import habitColors from '../constants/colors';
 
 export default function HabitsScreen() {
   const [habits, setHabits] = useState([]);
@@ -139,39 +140,40 @@ export default function HabitsScreen() {
                 testID="add-habit-button"
                 style={styles.addButton}
               >
-                <Ionicons name="add-circle" size={32} color="#2e86de" />
+                <Ionicons name="add-circle" size={32} color="black" />
               </TouchableOpacity>
             </View>
           </View>
         }
-        renderItem={({ item }) => {
-            console.log("🧪 Habit being rendered:", item.text, item.history);
+        renderItem={({ item, index }) => {
+            const colors = habitColors[index % habitColors.length];
+            const isCompleted = item.history?.[today];
           
             return (
               <TouchableOpacity
                 onPress={() => toggleHabit(item.id)}
                 onLongPress={() => editHabit(item)}
               >
-                <View style={styles.habitRowWrapper}>
+                <View style={[styles.habitRowWrapper, { backgroundColor: colors.faded }]}>
                   <View style={styles.habitRow}>
                     <View testID={`habit-icon-${item.id}`}>
                       <Ionicons
-                        name={item.history?.[today] ? 'checkmark-circle-sharp' : 'ellipse-outline'}
+                        name={isCompleted ? 'checkmark-circle-sharp' : 'ellipse-outline'}
                         size={24}
-                        color={item.history?.[today] ? 'green' : 'black'}
+                        color={isCompleted ? colors.bright : 'black'}
                       />
                     </View>
-                    <Text style={[styles.habit, item.history?.[today] && styles.completed]}>
+                    <Text style={[styles.habit, isCompleted && styles.completed]}>
                       {item.text}
                     </Text>
                     <TouchableOpacity onPress={() => deleteHabit(item.id)}>
-                      <Ionicons name="trash-sharp" size={24} color="red" />
+                      <Ionicons name="trash-sharp" size={24} color="#56bcf7" />
                     </TouchableOpacity>
                   </View>
                 </View>
               </TouchableOpacity>
             );
-        }}          
+          }}                   
 
         ListFooterComponent={
           <WeeklyProgress habits={habits} weekStartDate={weekStartDate} />

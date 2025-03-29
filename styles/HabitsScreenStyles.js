@@ -6,8 +6,15 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   input: { borderWidth: 1, padding: 10, borderRadius: 8, marginBottom: 10 },
   list: { marginTop: 20 },
-  habitRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 5,},
-  habit: { fontSize: 18, paddingVertical: 5, flex: 1 },
+  habitRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginVertical: 5,
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  habit: { fontSize: 14, paddingVertical: 5, flex: 1 },
   completed: { textDecorationLine: 'line-through', color: 'gray' },
   delete: { fontSize: 20, paddingHorizontal: 10 },
   progressRow: {
@@ -27,17 +34,20 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },    
   habitNameCell: {
-    flex: 0.8,
+    flex: 1,
     textAlign: 'left',
     fontSize: 14,
   },
   headerWrapper: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 1,
     paddingBottom: 10,
   },
   habitRowWrapper: {
-    paddingHorizontal: 16,
-  },
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 10,
+    marginBottom: 5,
+  },  
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -52,7 +62,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   addButton: {
-    padding: 4,
+    padding: 1,
   },
   title: {
     fontSize: 24,

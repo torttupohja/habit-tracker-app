@@ -19,7 +19,7 @@ export const getWeekDates = (startDate) => {
     dates.push(iso);
     current.setDate(current.getDate() + 1);
   }
-  console.log("🛠️ getWeekDates returned:", dates);
+  // console.log("🛠️ getWeekDates returned:", dates);
   return dates;
 };
 

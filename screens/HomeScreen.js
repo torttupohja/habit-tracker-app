@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './HomeScreenStyles';
+import styles from '../styles/HomeScreenStyles';
 import BackgroundWrapper from '../components/BackgroundWrapper';
 import quotes from '../quotes';
 import { SafeAreaView, Text, View, TouchableOpacity } from 'react-native';
