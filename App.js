@@ -1,36 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaView, Text, StyleSheet, Button } from 'react-native';
-import HabitsScreen from './screens/HabitsScreen';
-import quotes from './quotes';
+import { Asset } from 'expo-asset';
+import AppLoading from 'expo-app-loading';
+import { useFonts } from 'expo-font';
+import { ShadowsIntoLight_400Regular } from '@expo-google-fonts/shadows-into-light';
 
-// Stack navigator setup
+import HabitsScreen from './screens/HabitsScreen';
+import HomeScreen from './screens/HomeScreen';
+
 const Stack = createNativeStackNavigator();
 
-// Function to select a daily-changing quote
-function getDailyQuote() {
-  const today = new Date();
-  const index = today.getDate() % quotes.length; // Changes daily
-  return quotes[index];
-}
-
-// Home Screen Component
-function HomeScreen({ navigation }) {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>🌟 Welcome to Your Habit Tracker! 🌟</Text>
-      <Text style={styles.quote}>{getDailyQuote()}</Text>
-      <Button
-        title="Go to My Habits"
-        onPress={() => navigation.navigate('Habits')}
-      />
-    </SafeAreaView>
-  );
-}
-
-// Main App Component with Navigation
 export default function App() {
+  const [isReady, setIsReady] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    ShadowsIntoLight_400Regular,
+  });
+
+  const preloadAssets = async () => {
+    await Asset.loadAsync([require('./assets/backgrounds/blue_background.jpg')]);
+  };
+
+  if (!isReady || !fontsLoaded) {
+    return (
+      <AppLoading
+        startAsync={preloadAssets}
+        onFinish={() => setIsReady(true)}
+        onError={console.warn}
+      />
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -40,16 +41,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-// Styles for Home Screen
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20
-  },
-  header: {
-    fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center'
-  },
-  quote: {
-    fontSize: 18, fontStyle: 'italic', textAlign: 'center', marginBottom: 30, color: '#555'
-  },
-});

@@ -3,6 +3,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
 import HabitsScreen from '../screens/HabitsScreen';
 import { getTodayDate } from '../utils/utils';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 // Optional: mock AsyncStorage to prevent side effects
 jest.mock('@react-native-async-storage/async-storage', () => {

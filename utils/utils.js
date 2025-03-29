@@ -2,20 +2,26 @@
 
 // Returns today's date as 'YYYY-MM-DD'
 export const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
+  const now = new Date();
+
+  const timezoneOffsetInMs = now.getTimezoneOffset() * 60000;
+  const localTime = new Date(now.getTime() - timezoneOffsetInMs);
+
+  return localTime.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+};
   
 // Returns an array of 7 dates (YYYY-MM-DD) starting from a given date
-export const getWeekDates = (startDateStr) => {
-const dates = [];
-const start = new Date(startDateStr);
-for (let i = 0; i < 7; i++) {
-    const day = new Date(start);
-    day.setDate(start.getDate() + i);
-    dates.push(day.toISOString().split('T')[0]);
-}
-return dates;
+export const getWeekDates = (startDate) => {
+  const dates = [];
+  const start = new Date(startDate);
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    const formatted = date.toISOString().split('T')[0];
+    dates.push(formatted);
+  }
+  return dates;
 };
 
 // Checks if today is still within the current week (7 days from start)

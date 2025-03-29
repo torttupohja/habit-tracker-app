@@ -7,8 +7,10 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
   if (!Array.isArray(habits) || !weekStartDate || habits.length === 0) {
     return null;
   }
-
+  console.log("📆 weekStartDate passed into WeeklyProgress:", weekStartDate);
+  console.log("📅 generated week dates:", getWeekDates(weekStartDate));  
   const weekDates = getWeekDates(weekStartDate);
+  console.log("📊 WeeklyProgress rendering habits:", habits);
 
   return (
     <View style={styles.wrapper}>
@@ -26,6 +28,7 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
 
       {/* Habit rows */}
       {habits.map(habit => {
+        console.log("📊 Habit in grid:", habit.text, habit.history);
         if (!habit || typeof habit !== 'object' || !habit.id || !habit.text) return null;
 
         return (
