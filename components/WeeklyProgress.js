@@ -7,10 +7,7 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
   if (!Array.isArray(habits) || !weekStartDate || habits.length === 0) {
     return null;
   }
-  console.log("📆 weekStartDate passed into WeeklyProgress:", weekStartDate);
-  console.log("📅 generated week dates:", getWeekDates(weekStartDate));  
-  const weekDates = getWeekDates(weekStartDate);
-  console.log("📊 WeeklyProgress rendering habits:", habits);
+  const weekDates = getWeekDates(weekStartDate); 
 
   return (
     <View style={styles.wrapper}>
@@ -19,16 +16,19 @@ const WeeklyProgress = ({ habits = [], weekStartDate }) => {
       {/* Header row */}
       <View style={styles.progressRow}>
         <Text style={[styles.progressCell, styles.habitNameCell]}>Habit</Text>
-        {weekDates.map(date => (
-          <Text key={date} style={styles.progressCell}>
-            {new Date(date).getMonth() + 1}/{new Date(date).getDate()}
-          </Text>
-        ))}
+        {getWeekDates(weekStartDate).map(date => {
+          console.log("📆 WeeklyProgress rendering date cell:", date);
+          return (
+            <Text key={date} style={styles.progressCell}>
+              {date.slice(5).replace('-', '/')}
+            </Text>
+          );
+        })}
       </View>
+
 
       {/* Habit rows */}
       {habits.map(habit => {
-        console.log("📊 Habit in grid:", habit.text, habit.history);
         if (!habit || typeof habit !== 'object' || !habit.id || !habit.text) return null;
 
         return (

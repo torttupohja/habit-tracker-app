@@ -15,15 +15,13 @@ export default function HabitsScreen() {
   const [weekStartDate, setWeekStartDate] = useState(null);
 
   const today = getTodayDate();
-  console.log("📆 Today:", today);
-  console.log("📆 WeekStartDate:", weekStartDate);
-
-  // One-time: Clear AsyncStorage if you want to reset
-  useEffect(() => {
-    AsyncStorage.clear().then(() => {
-      console.log("🧹 Cleared all storage");
-    });
-  }, []);
+  
+  // ❗Uncomment this ONLY if you need to reset storage for testing
+  // useEffect(() => {
+  //   AsyncStorage.clear().then(() => {
+  //     console.log("🧹 Cleared all storage");
+  //   });
+  // }, []);
 
   useEffect(() => {
     loadHabits();
@@ -45,7 +43,6 @@ export default function HabitsScreen() {
         const today = getTodayDate();
         setWeekStartDate(today);
         await AsyncStorage.setItem('weekStartDate', today);
-        console.log("🆕 Set new weekStartDate:", today);
       }
     } catch (error) {
       console.error("Error loading data:", error);

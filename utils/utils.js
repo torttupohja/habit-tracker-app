@@ -13,16 +13,16 @@ export const getTodayDate = () => {
 // Returns an array of 7 dates (YYYY-MM-DD) starting from a given date
 export const getWeekDates = (startDate) => {
   const dates = [];
-  const start = new Date(startDate);
-
+  const current = new Date(startDate);
   for (let i = 0; i < 7; i++) {
-    const date = new Date(start);
-    date.setDate(start.getDate() + i);
-    const formatted = date.toISOString().split('T')[0];
-    dates.push(formatted);
+    const iso = current.toISOString().split('T')[0];
+    dates.push(iso);
+    current.setDate(current.getDate() + 1);
   }
+  console.log("🛠️ getWeekDates returned:", dates);
   return dates;
 };
+
 
 // Checks if today is still within the current week (7 days from start)
 export const isCurrentWeek = (weekStartDateStr) => {
