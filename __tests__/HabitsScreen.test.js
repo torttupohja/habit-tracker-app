@@ -1,54 +1,66 @@
-// __tests__/HabitsScreen.test.js
 import React from 'react';
-import { render, waitFor, screen,fireEvent, act } from '@testing-library/react-native';
+import { render, waitFor, screen, fireEvent } from '@testing-library/react-native';
 import HabitsScreen from '../screens/HabitsScreen';
 import { addHabit, toggleHabit } from '../test/utils/testUtils';
 
 describe('HabitsScreen', () => {
+  const renderHabitsScreen = async () => {
+    let utils;
+    await waitFor(() => {
+      utils = render(<HabitsScreen />);
+    });
+    return utils;
+  };
+
   it('renders correctly with initial elements', async () => {
-    render(<HabitsScreen />);
+    const { getByText, getByPlaceholderText, getByTestId } = await renderHabitsScreen();
 
     await waitFor(() => {
-      expect(screen.getByText('My Habits 📋')).toBeTruthy();
-      expect(screen.getByPlaceholderText('Add or edit a habit')).toBeTruthy();
-      expect(screen.getByTestId('add-habit-button')).toBeTruthy();
+      expect(getByText('My Habits 📋')).toBeTruthy();
+      expect(getByPlaceholderText('Add or edit a habit')).toBeTruthy();
+      expect(getByTestId('add-habit-button')).toBeTruthy();
     });
   });
 
-  it('adds a new habit and toggles it as completed', async () => {
-    render(<HabitsScreen />);
+  it('adds and toggles a habit', async () => {
+    const utils = await renderHabitsScreen();
+    const habitName = `Drink Water ${Date.now()}`;
+  
+    await addHabit(utils, habitName);
+  
+    const habitItem = utils.getByText(habitName);
+    fireEvent.press(habitItem);
+  
+    // ✅ Simpler: just check if the completed icon exists
+    expect(utils.getByText('[Icon name=checkmark-circle-sharp color=#FFD700 size=24]')).toBeTruthy();
+  });  
 
-    // 🧪 Add a habit
-    await addHabit('Drink water');
-
-    // 🧪 Toggle it to complete
-    await toggleHabit('Drink water');
-
-    // ✅ Check if icon switched to completed
-    const iconWrapper = screen.getByTestId('habit-icon-1');
-    const icon = iconWrapper.props.children;
-    expect(icon.props.name).toBe('checkmark-circle-sharp');
-  });
-
-it('deletes a habit from the list', async () => {
-  const { getByText, queryByText } = render(<HabitsScreen />);
-
-    // 1️⃣ Add a habit
-    await addHabit('Meditate');
-
-    // 2️⃣ Long press to simulate entering edit/delete state
-    const habitItem = await waitFor(() => getByText('Meditate'));
-    act(() => {
-      fireEvent(habitItem, 'longPress');
+  it('deletes a habit from the list', async () => {
+    const utils = await renderHabitsScreen();
+    const habitName = `Meditate ${Date.now()}`;
+  
+    await addHabit(utils, habitName);
+  
+    const habitText = await waitFor(() => utils.getByText(habitName));
+    expect(habitText).toBeTruthy();
+  
+    // 🔍 Find the habit ID from the testID on the icon wrapper
+    const iconWrapper = utils.getByText(habitName).parent.parent;
+    const testID = iconWrapper.find(child =>
+      child.props?.testID?.startsWith('habit-icon-')
+    )?.props?.testID;
+  
+    const habitId = testID?.replace('habit-icon-', '');
+  
+    expect(habitId).toBeTruthy();
+  
+    // 🗑️ Press the delete button
+    const deleteBtn = utils.getByTestId(`delete-habit-${habitId}`);
+    fireEvent.press(deleteBtn);
+  
+    // ✅ Confirm it's deleted (Alert mock already presses 'Delete')
+    await waitFor(() => {
+      expect(utils.queryByText(habitName)).toBeNull();
     });
-
-    // 3️⃣ Confirm deletion (you may need to adapt this if your Alert uses custom text)
-    await act(async () => {
-      // simulate user pressing 'Delete' in the Alert
-      await fireEvent.press(getByText('Delete'));
-    });
-
-    // 4️⃣ Confirm it was removed
-    expect(queryByText('Meditate')).toBeNull();
-  });
+  });  
 });

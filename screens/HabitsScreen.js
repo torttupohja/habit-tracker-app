@@ -71,11 +71,11 @@ export default function HabitsScreen() {
       ));
       setEditingHabitId(null);
     } else {
-      const newHabit = {
-        id: Date.now().toString(),
-        text: habitText,
-        history: {}
-      };
+        const newHabit = {
+            id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+            text: habitText,
+            history: {}
+          };          
       setHabits([...habits, newHabit]);
     }
 
@@ -166,8 +166,11 @@ export default function HabitsScreen() {
                     <Text style={[styles.habit, isCompleted && styles.completed]}>
                       {item.text}
                     </Text>
-                    <TouchableOpacity onPress={() => deleteHabit(item.id)}>
-                      <Ionicons name="trash-sharp" size={24} color="#56bcf7" />
+                    <TouchableOpacity
+                        testID={`delete-habit-${item.id}`}
+                        onPress={() => deleteHabit(item.id)}
+                    >
+                        <Ionicons name="trash-sharp" size={24} color="#56bcf7" />
                     </TouchableOpacity>
                   </View>
                 </View>

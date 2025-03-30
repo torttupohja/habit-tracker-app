@@ -11,7 +11,6 @@
     "test": "jest"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/test/setup.js"],
     "preset": "jest-expo",
     "setupFilesAfterEnv": ["<rootDir>/test/setup.js"],
     "transformIgnorePatterns": [

@@ -10,9 +10,3 @@ jest.mock('expo-font', () => ({
   loadAsync: jest.fn(),
   isLoaded: jest.fn(() => true),
 }));
-
-// Optional: Mock navigation if you're using react-navigation
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({ navigate: jest.fn() }),
-  NavigationContainer: ({ children }) => children,
-}));
