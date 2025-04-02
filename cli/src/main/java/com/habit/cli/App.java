@@ -42,7 +42,6 @@ public class App {
 
             for (HabitStats stats : habitStatsList) {
                 System.out.println("Habit: " + stats.getName());
-
                 for (Map.Entry<String, Integer> entry : stats.getWeeklyCounts().entrySet()) {
                     System.out.println("  " + entry.getKey() + ": " + entry.getValue() + " completions");
                 }
@@ -50,11 +49,12 @@ public class App {
                 if (!stats.getWeeklyCounts().isEmpty()) {
                     String bestWeek = Collections.max(stats.getWeeklyCounts().entrySet(), Map.Entry.comparingByValue()).getKey();
                     int bestCount = stats.getWeeklyCounts().get(bestWeek);
+                    double average = stats.getAverage();
+                    int totalCompletions = stats.getWeeklyCounts().values().stream().mapToInt(Integer::intValue).sum();
 
+                    System.out.println("  ➤ Total Completions: " + totalCompletions);
                     System.out.println("  ➤ Best Week: " + bestWeek + " (" + bestCount + " completions)");
-                    System.out.printf("  ➤ Weekly Average: %.2f completions%n%n", stats.getAverage());
-                } else {
-                    System.out.println("  ➤ No data available.\n");
+                    System.out.printf("  ➤ Weekly Average: %.2f completions%n%n", average);
                 }
             }
 
