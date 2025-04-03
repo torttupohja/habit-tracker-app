@@ -1,23 +1,30 @@
 package com.habit.cli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.Arrays;
 
 public class App {
     public static void main(String[] args) {
+        String filterHabit = null;
+        boolean summaryMode = false;
+
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("--summary")) {
+                summaryMode = true;
+            } else {
+                filterHabit = arg.toLowerCase();
+            }
+        }
         try {
             ObjectMapper mapper = new ObjectMapper();
             File file = new File("habits.json");
 
             Habit[] habits = mapper.readValue(file, Habit[].class);
             WeekFields weekFields = WeekFields.of(Locale.getDefault());
-
-            String filterHabit = args.length > 0 ? args[0].toLowerCase() : null;
-
             List<HabitStats> habitStatsList = new ArrayList<>();
 
             for (Habit habit : habits) {
@@ -42,6 +49,14 @@ public class App {
 
             for (HabitStats stats : habitStatsList) {
                 System.out.println("💪 Habit: " + stats.getName());
+                if (summaryMode) {
+                    int totalCompletions = stats.getWeeklyCounts().values().stream().mapToInt(Integer::intValue).sum();
+                    System.out.println("  ✅ Total Completions: " + totalCompletions);
+                    System.out.printf("  ⭐ Weekly Average: %.2f completions%n%n", stats.getAverage());
+                    continue; // Skip detailed output
+                }
+
+                // Week-by-week details
                 for (Map.Entry<String, Integer> entry : stats.getWeeklyCounts().entrySet()) {
                     System.out.println("  📅 " + entry.getKey() + ": " + entry.getValue() + " completions");
                 }
@@ -49,15 +64,13 @@ public class App {
                 if (!stats.getWeeklyCounts().isEmpty()) {
                     String bestWeek = Collections.max(stats.getWeeklyCounts().entrySet(), Map.Entry.comparingByValue()).getKey();
                     int bestCount = stats.getWeeklyCounts().get(bestWeek);
-                    double average = stats.getAverage();
                     int totalCompletions = stats.getWeeklyCounts().values().stream().mapToInt(Integer::intValue).sum();
 
                     System.out.println("  ✅ Total Completions: " + totalCompletions);
                     System.out.println("  🔥 Best Week: " + bestWeek + " (" + bestCount + " completions)");
-                    System.out.printf("  ⭐ Weekly Average: %.2f completions%n%n", average);
+                    System.out.printf("  ⭐ Weekly Average: %.2f completions%n%n", stats.getAverage());
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
