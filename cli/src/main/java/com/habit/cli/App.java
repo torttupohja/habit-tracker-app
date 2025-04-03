@@ -41,9 +41,9 @@ public class App {
             habitStatsList.sort(Comparator.comparingDouble(HabitStats::getAverage).reversed());
 
             for (HabitStats stats : habitStatsList) {
-                System.out.println("Habit: " + stats.getName());
+                System.out.println("💪 Habit: " + stats.getName());
                 for (Map.Entry<String, Integer> entry : stats.getWeeklyCounts().entrySet()) {
-                    System.out.println("  " + entry.getKey() + ": " + entry.getValue() + " completions");
+                    System.out.println("  📅 " + entry.getKey() + ": " + entry.getValue() + " completions");
                 }
 
                 if (!stats.getWeeklyCounts().isEmpty()) {
@@ -52,9 +52,9 @@ public class App {
                     double average = stats.getAverage();
                     int totalCompletions = stats.getWeeklyCounts().values().stream().mapToInt(Integer::intValue).sum();
 
-                    System.out.println("  ➤ Total Completions: " + totalCompletions);
-                    System.out.println("  ➤ Best Week: " + bestWeek + " (" + bestCount + " completions)");
-                    System.out.printf("  ➤ Weekly Average: %.2f completions%n%n", average);
+                    System.out.println("  ✅ Total Completions: " + totalCompletions);
+                    System.out.println("  🔥 Best Week: " + bestWeek + " (" + bestCount + " completions)");
+                    System.out.printf("  ⭐ Weekly Average: %.2f completions%n%n", average);
                 }
             }
 
